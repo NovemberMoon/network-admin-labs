@@ -1,0 +1,42 @@
+---
+- name: Test file manipulation operations
+  hosts: my_servers
+  vars:
+      test_file_path: "~/test_ansible.txt"
+
+  tasks:
+      # 1. Создаем файл
+      - name: 1. Create a file with initial content
+        copy:
+            dest: "{{ test_file_path }}"
+            content: "Initial content created by Ansible.\n"
+            mode: "0644"
+
+      # 2. Читаем его
+      - name: Check file content
+        command: "cat {{ test_file_path }}"
+        register: initial_content
+
+      - debug:
+            msg: "File content: {{ initial_content.stdout }}"
+
+      # 3. Меняем содержимое
+      - name: 2. Modify file content
+        copy:
+            dest: "{{ test_file_path }}"
+            content: "MODIFIED content by Ansible step 2.\n"
+            mode: "0644"
+
+      # 4. Проверяем изменения
+      - name: Check modified content
+        command: "cat {{ test_file_path }}"
+        register: modified_content
+
+      - debug:
+            msg: "New content: {{ modified_content.stdout }}"
+
+      # 5. Удаляем файл
+      - name: 3. Delete the file
+        file:
+            path: "{{ test_file_path }}"
+            state: absent
