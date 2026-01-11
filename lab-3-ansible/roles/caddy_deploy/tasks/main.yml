@@ -1,0 +1,63 @@
+---
+# tasks file for caddy_deploy
+
+- name: Install prerequisites
+  apt:
+      pkg:
+          - debian-keyring
+          - debian-archive-keyring
+          - apt-transport-https
+          - curl
+      state: present
+  become: true
+
+- name: Add key for Caddy repo
+  apt_key:
+      url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
+      state: present
+      keyring: /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  become: true
+
+- name: add Caddy repo
+  apt_repository:
+      repo: "deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main"
+      state: present
+      filename: caddy-stable
+  become: true
+
+- name: add Caddy src repo
+  apt_repository:
+      repo: "deb-src [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main"
+      state: present
+      filename: caddy-stable
+  become: true
+
+- name: Install Caddy webserver
+  apt:
+      name: caddy
+      update_cache: yes
+      state: present
+  become: true
+
+# Создаем папку для сайта
+- name: Create web directory
+  file:
+      path: /var/www/html
+      state: directory
+      mode: "0755"
+  become: true
+
+# Заливаем наш HTML
+- name: Deploy custom index
+  template:
+      src: index.html.j2
+      dest: /var/www/html/index.html
+  become: true
+
+# Заливаем конфиг
+- name: Deploy config
+  template:
+      src: Caddyfile.j2
+      dest: /etc/caddy/Caddyfile
+  become: true
+  notify: Reload Caddy

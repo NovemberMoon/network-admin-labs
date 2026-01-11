@@ -1,0 +1,8 @@
+---
+# handlers file for caddy_deploy
+
+- name: Reload Caddy
+  service:
+      name: caddy
+      state: reloaded
+  become: true
