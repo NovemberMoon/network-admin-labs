@@ -1,2 +1,5 @@
 ---
 # vars file for caddy_deploy
+
+domain_name: "ansible-lab.local"
+custom_header: "Ansible-Success"

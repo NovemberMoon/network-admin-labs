@@ -38,3 +38,26 @@
       update_cache: yes
       state: present
   become: true
+
+# Создаем папку для сайта
+- name: Create web directory
+  file:
+      path: /var/www/html
+      state: directory
+      mode: "0755"
+  become: true
+
+# Заливаем наш HTML
+- name: Deploy custom index
+  template:
+      src: index.html.j2
+      dest: /var/www/html/index.html
+  become: true
+
+# Заливаем конфиг
+- name: Deploy config
+  template:
+      src: Caddyfile.j2
+      dest: /etc/caddy/Caddyfile
+  become: true
+  notify: Reload Caddy

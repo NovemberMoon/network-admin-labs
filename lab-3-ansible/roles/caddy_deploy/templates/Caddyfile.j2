@@ -1,0 +1,8 @@
+http://{{ domain_name }}:8080 {
+    root * /var/www/html
+    file_server
+    
+    header {
+        X-Custom-Header "{{ custom_header }}"
+    }
+}
